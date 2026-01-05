@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  buyerTransactions  Transaction[] @relation("BuyerTransactions")
+  sellerTransactions Transaction[] @relation("SellerTransactions")
+  locationUpdates    LocationUpdate[]
+  stripeConnectAccountId String?
+
+  @@map("users")
+}
+
+model Transaction {
+  id                     String   @id @default(cuid())
+  buyerId                String
+  sellerId               String
+  amount                 Int      // Amount in cents
+  currency               String   @default("usd")
+  stripePaymentIntentId  String?  @unique
+  stripeConnectAccountId String?
+  status                 TransactionStatus @default(PENDING)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  // Relations
+  buyer  User   @relation("BuyerTransactions", fields: [buyerId], references: [id])
+  seller User   @relation("SellerTransactions", fields: [sellerId], references: [id])
+  handoff Handoff?
+
+  @@map("transactions")
+}
+
+model Handoff {
+  id               String   @id @default(cuid())
+  transactionId    String   @unique
+  dropPinLat       Float
+  dropPinLng       Float
+  confirmationCode String   @unique
+  qrCodeData       String
+  buyerConfirmed   Boolean  @default(false)
+  sellerConfirmed  Boolean  @default(false)
+  confirmedAt      DateTime?
+  expiresAt        DateTime // 24 hours from creation
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  transaction     Transaction   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  locationUpdates LocationUpdate[]
+
+  @@map("handoffs")
+}
+
+model LocationUpdate {
+  id        String   @id @default(cuid())
+  handoffId String
+  userId    String
+  latitude  Float
+  longitude Float
+  timestamp DateTime @default(now())
+
+  // Relations
+  handoff Handoff @relation(fields: [handoffId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@map("location_updates")
+}
+
+enum TransactionStatus {
+  PENDING
+  AUTHORIZED
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}

@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: drop-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run prisma:migrate:deploy && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: drop-database
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: APP_URL
+        fromService:
+          type: web
+          name: drop-backend
+          property: host
+      - key: CORS_ORIGIN
+        value: "*"
+  
+  - type: pgsql
+    name: drop-database
+    plan: free
+    databaseName: drop_db
+    user: drop_user
+
