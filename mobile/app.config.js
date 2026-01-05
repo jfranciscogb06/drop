@@ -52,7 +52,7 @@ export default {
     extra: {
       apiBaseUrl: process.env.API_BASE_URL || 'https://drop-rpxl.onrender.com/api',
       socketUrl: process.env.SOCKET_URL || 'https://drop-rpxl.onrender.com',
-      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',
+      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51SlzeZRkQgt0Hb9BYA0EpcS1gYqjygM2cUOAfcEIvGRqe2Cawgdxh1fMvVWVrUn4hZV5AwVYFqqnGO6GwEKhIA8E00kj0wPLap',
     },
   },
 };
