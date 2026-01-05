@@ -9,7 +9,7 @@ export const authenticateToken = (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-): void => {
+) => {
   const authHeader = req.headers['authorization'] as string | undefined;
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
