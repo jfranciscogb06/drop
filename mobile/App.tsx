@@ -3,15 +3,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StripeProvider } from '@stripe/stripe-react-native';
-import { initializeStripe } from './services/stripe.service';
-import { config } from './config/env';
-import MapMainScreen from './screens/MapMainScreen';
-import TransactionScreen from './screens/TransactionScreen';
-import MapScreen from './screens/MapScreen';
-import LocationShareScreen from './screens/LocationShareScreen';
-import HandoffConfirmScreen from './screens/HandoffConfirmScreen';
-import { RootStackParamList } from './types/navigation';
-import { colors, typography } from './theme';
+import { initializeStripe } from './src/services/stripe.service';
+import { config } from './src/config/env';
+import MapMainScreen from './src/screens/MapMainScreen';
+import TransactionScreen from './src/screens/TransactionScreen';
+import MapScreen from './src/screens/MapScreen';
+import LocationShareScreen from './src/screens/LocationShareScreen';
+import HandoffConfirmScreen from './src/screens/HandoffConfirmScreen';
+import { RootStackParamList } from './src/types/navigation';
+import { colors, typography } from './src/theme';
 
 export type { RootStackParamList };
 
