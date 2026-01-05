@@ -13,6 +13,7 @@ import { RootStackParamList } from '../types/navigation';
 import { connectSocket, getSocket } from '../socket/locationSocket';
 import { watchPosition, clearWatch, requestLocationPermission } from '../services/location.service';
 import api from '../services/api.service';
+import { colors, typography, spacing } from '../theme';
 
 type LocationShareScreenRouteProp = RouteProp<RootStackParamList, 'LocationShareScreen'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -195,22 +196,34 @@ const LocationShareScreen: React.FC = () => {
         )}
       </MapView>
       <View style={styles.controls}>
-        <Text style={styles.status}>
-          {isSharing ? 'Sharing location...' : 'Location sharing paused'}
-        </Text>
+        <View style={styles.statusContainer}>
+          <View style={[styles.statusIndicator, isSharing && styles.statusIndicatorActive]} />
+          <Text style={styles.status}>
+            {isSharing ? 'Sharing location...' : 'Location sharing paused'}
+          </Text>
+        </View>
         <View style={styles.buttonRow}>
           {isSharing ? (
-            <TouchableOpacity style={styles.button} onPress={stopLocationTracking}>
-              <Text style={styles.buttonText}>Stop Sharing</Text>
+            <TouchableOpacity 
+              style={[styles.button, styles.buttonSecondary]} 
+              onPress={stopLocationTracking}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Stop Sharing</Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.button} onPress={startLocationTracking}>
-              <Text style={styles.buttonText}>Start Sharing</Text>
+            <TouchableOpacity 
+              style={[styles.button, styles.buttonSecondary]} 
+              onPress={startLocationTracking}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.buttonText, styles.buttonTextSecondary]}>Start Sharing</Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity
             style={[styles.button, styles.confirmButton]}
             onPress={handleConfirmHandoff}
+            activeOpacity={0.8}
           >
             <Text style={styles.buttonText}>Confirm Handoff</Text>
           </TouchableOpacity>
@@ -232,41 +245,77 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'white',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    backgroundColor: colors.background.primary,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.xl + 8,
+    paddingHorizontal: spacing.xl,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: colors.shadow.dark,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.sm,
+  },
+  statusIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.border.default,
+    marginRight: spacing.md,
+  },
+  statusIndicatorActive: {
+    backgroundColor: colors.success.main,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   status: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 15,
-    textAlign: 'center',
+    ...typography.styles.bodySmall,
+    color: colors.text.secondary,
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
+    gap: spacing.base,
   },
   button: {
     flex: 1,
-    backgroundColor: '#007AFF',
-    padding: 15,
+    paddingVertical: spacing.base,
+    paddingHorizontal: spacing.xl,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 52,
+  },
+  buttonSecondary: {
+    backgroundColor: colors.background.tertiary,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   confirmButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.success.main,
+    shadowColor: colors.success.main,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    ...typography.styles.button,
+    color: colors.text.white,
+  },
+  buttonTextSecondary: {
+    color: colors.text.primary,
   },
 });
 

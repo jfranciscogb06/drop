@@ -10,6 +10,7 @@ import MapScreen from './screens/MapScreen';
 import LocationShareScreen from './screens/LocationShareScreen';
 import HandoffConfirmScreen from './screens/HandoffConfirmScreen';
 import { RootStackParamList } from './types/navigation';
+import { colors, typography } from './theme';
 
 export type { RootStackParamList };
 
@@ -28,12 +29,14 @@ const App: React.FC = () => {
             initialRouteName="TransactionScreen"
             screenOptions={{
               headerStyle: {
-                backgroundColor: '#007AFF',
+                backgroundColor: colors.primary.main,
               },
-              headerTintColor: '#fff',
+              headerTintColor: colors.text.white,
               headerTitleStyle: {
-                fontWeight: 'bold',
+                ...typography.styles.h4,
+                color: colors.text.white,
               },
+              headerShadowVisible: false,
             }}
           >
             <Stack.Screen

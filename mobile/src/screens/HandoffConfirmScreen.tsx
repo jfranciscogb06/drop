@@ -7,13 +7,15 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import QRCode from 'react-native-qrcode-generator';
+import QRCode from 'react-native-qrcode-svg';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import api from '../services/api.service';
+import { colors, typography, spacing } from '../theme';
 
 type HandoffConfirmScreenRouteProp = RouteProp<RootStackParamList, 'HandoffConfirmScreen'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -113,23 +115,24 @@ const HandoffConfirmScreen: React.FC = () => {
     if (!permission.granted) {
       // Camera permissions are not granted yet
       return (
-        <View style={styles.container}>
-          <Text style={styles.scannerText}>We need your permission to use the camera</Text>
-          <TouchableOpacity style={styles.closeButton} onPress={requestPermission}>
-            <Text style={styles.closeButtonText}>Grant Permission</Text>
+        <View style={styles.scannerPermissionContainer}>
+          <Text style={styles.scannerPermissionText}>We need your permission to use the camera</Text>
+          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission} activeOpacity={0.8}>
+            <Text style={styles.permissionButtonText}>Grant Permission</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.closeButton}
+            style={[styles.permissionButton, styles.permissionButtonSecondary]}
             onPress={() => setShowScanner(false)}
+            activeOpacity={0.8}
           >
-            <Text style={styles.closeButtonText}>Cancel</Text>
+            <Text style={[styles.permissionButtonText, styles.permissionButtonTextSecondary]}>Cancel</Text>
           </TouchableOpacity>
         </View>
       );
     }
 
     return (
-      <View style={styles.container}>
+      <View style={styles.scannerContainer}>
         <CameraView
           style={StyleSheet.absoluteFill}
           facing="back"
@@ -139,20 +142,28 @@ const HandoffConfirmScreen: React.FC = () => {
           }}
         />
         <View style={styles.scannerOverlay}>
-          <Text style={styles.scannerText}>Scan QR Code</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowScanner(false)}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+          <View style={styles.scannerContent}>
+            <View style={styles.scannerFrame} />
+            <Text style={styles.scannerText}>Position QR code within the frame</Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowScanner(false)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      keyboardShouldPersistTaps="handled"
+    >
       <Text style={styles.title}>Confirm Handoff</Text>
 
       {/* QR Code Display */}
@@ -160,7 +171,12 @@ const HandoffConfirmScreen: React.FC = () => {
         <View style={styles.qrSection}>
           <Text style={styles.sectionTitle}>Your QR Code</Text>
           <View style={styles.qrContainer}>
-            <QRCode value={qrCodeData} size={200} />
+            <QRCode 
+              value={qrCodeData} 
+              size={220}
+              backgroundColor={colors.background.primary}
+              color={colors.text.primary}
+            />
           </View>
         </View>
       )}
@@ -169,6 +185,7 @@ const HandoffConfirmScreen: React.FC = () => {
       <TouchableOpacity
         style={styles.scanButton}
         onPress={() => setShowScanner(true)}
+        activeOpacity={0.8}
       >
         <Text style={styles.scanButtonText}>Scan QR Code</Text>
       </TouchableOpacity>
@@ -186,6 +203,7 @@ const HandoffConfirmScreen: React.FC = () => {
         <TextInput
           style={styles.codeInput}
           placeholder="Enter 6-digit code"
+          placeholderTextColor={colors.text.light}
           value={confirmationCode}
           onChangeText={setConfirmationCode}
           keyboardType="number-pad"
@@ -194,98 +212,176 @@ const HandoffConfirmScreen: React.FC = () => {
         <TouchableOpacity
           style={[styles.submitButton, loading && styles.buttonDisabled]}
           onPress={handleCodeSubmit}
-          disabled={loading}
+          disabled={loading || !confirmationCode}
+          activeOpacity={0.8}
         >
           {loading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={colors.text.white} />
           ) : (
             <Text style={styles.submitButtonText}>Confirm</Text>
           )}
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background.secondary,
+  },
+  contentContainer: {
+    padding: spacing.xl,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
+    ...typography.styles.h2,
+    color: colors.text.primary,
+    marginBottom: spacing['2xl'],
     textAlign: 'center',
   },
   qrSection: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: spacing['2xl'],
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 15,
+    ...typography.styles.h4,
+    color: colors.text.primary,
+    marginBottom: spacing.lg,
   },
   qrContainer: {
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
+    padding: spacing.lg,
+    backgroundColor: colors.background.primary,
+    borderRadius: 12,
+    shadowColor: colors.shadow.default,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   scanButton: {
-    backgroundColor: '#007AFF',
-    padding: 15,
+    backgroundColor: colors.primary.main,
+    paddingVertical: spacing.base,
+    paddingHorizontal: spacing.xl,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'center',
+    marginBottom: spacing.xl,
+    minHeight: 52,
+    shadowColor: colors.primary.main,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   scanButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    ...typography.styles.button,
+    color: colors.text.white,
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: spacing.xl,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#ddd',
+    backgroundColor: colors.border.light,
   },
   dividerText: {
-    marginHorizontal: 15,
-    color: '#666',
-    fontSize: 14,
+    ...typography.styles.bodySmall,
+    marginHorizontal: spacing.base,
+    color: colors.text.tertiary,
+    fontWeight: typography.fontWeight.medium,
   },
   codeSection: {
-    marginTop: 20,
+    marginTop: spacing.md,
   },
   codeInput: {
+    ...typography.styles.h3,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.border.default,
     borderRadius: 8,
-    padding: 15,
-    fontSize: 18,
+    padding: spacing.base,
     textAlign: 'center',
-    letterSpacing: 8,
-    marginBottom: 15,
+    letterSpacing: 12,
+    marginBottom: spacing.lg,
+    backgroundColor: colors.background.primary,
+    color: colors.text.primary,
+    minHeight: 56,
+    fontWeight: typography.fontWeight.semibold,
   },
   submitButton: {
-    backgroundColor: '#34C759',
-    padding: 15,
+    backgroundColor: colors.success.main,
+    paddingVertical: spacing.base,
+    paddingHorizontal: spacing.xl,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 52,
+    shadowColor: colors.success.main,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonDisabled: {
     opacity: 0.5,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    ...typography.styles.button,
+    color: colors.text.white,
+  },
+  scannerContainer: {
+    flex: 1,
+    backgroundColor: colors.background.primary,
+  },
+  scannerPermissionContainer: {
+    flex: 1,
+    backgroundColor: colors.background.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
+  scannerPermissionText: {
+    ...typography.styles.body,
+    color: colors.text.primary,
+    textAlign: 'center',
+    marginBottom: spacing['2xl'],
+  },
+  permissionButton: {
+    backgroundColor: colors.primary.main,
+    paddingVertical: spacing.base,
+    paddingHorizontal: spacing.xl,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 200,
+    minHeight: 52,
+    marginBottom: spacing.base,
+  },
+  permissionButtonSecondary: {
+    backgroundColor: colors.background.tertiary,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+  },
+  permissionButtonText: {
+    ...typography.styles.button,
+    color: colors.text.white,
+  },
+  permissionButtonTextSecondary: {
+    color: colors.text.primary,
   },
   scannerOverlay: {
     position: 'absolute',
@@ -293,25 +389,42 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: colors.background.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  scannerContent: {
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: spacing.xl,
+  },
+  scannerFrame: {
+    width: 250,
+    height: 250,
+    borderWidth: 2,
+    borderColor: colors.primary.main,
+    borderRadius: 12,
+    marginBottom: spacing.xl,
+  },
   scannerText: {
-    color: '#fff',
-    fontSize: 18,
-    marginBottom: 20,
+    ...typography.styles.body,
+    color: colors.text.white,
+    marginBottom: spacing['2xl'],
+    textAlign: 'center',
   },
   closeButton: {
-    backgroundColor: '#007AFF',
-    padding: 15,
+    backgroundColor: colors.primary.main,
+    paddingVertical: spacing.base,
+    paddingHorizontal: spacing.xl,
     borderRadius: 8,
-    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 150,
+    minHeight: 52,
   },
   closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    ...typography.styles.button,
+    color: colors.text.white,
   },
 });
 

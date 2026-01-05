@@ -11,6 +11,7 @@ import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { requestLocationPermission, getCurrentLocation } from '../services/location.service';
+import { colors, typography, spacing } from '../theme';
 
 type MapScreenRouteProp = RouteProp<RootStackParamList, 'MapScreen'>;
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -87,15 +88,21 @@ const MapScreen: React.FC = () => {
         )}
       </MapView>
       <View style={styles.controls}>
-        <Text style={styles.instruction}>
-          {selectedLocation
-            ? 'Location selected. Tap confirm to proceed.'
-            : 'Tap on the map to drop a pin for the meeting point'}
-        </Text>
+        <View style={styles.instructionContainer}>
+          <View style={styles.iconContainer}>
+            <View style={[styles.iconDot, selectedLocation && styles.iconDotActive]} />
+          </View>
+          <Text style={styles.instruction}>
+            {selectedLocation
+              ? 'Location selected. Tap confirm to proceed.'
+              : 'Tap on the map to drop a pin for the meeting point'}
+          </Text>
+        </View>
         <TouchableOpacity
           style={[styles.button, !selectedLocation && styles.buttonDisabled]}
           onPress={handleConfirmLocation}
           disabled={!selectedLocation}
+          activeOpacity={0.8}
         >
           <Text style={styles.buttonText}>Confirm Location</Text>
         </TouchableOpacity>
@@ -116,35 +123,74 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'white',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    backgroundColor: colors.background.primary,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.xl + 8,
+    paddingHorizontal: spacing.xl,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: colors.shadow.dark,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  instructionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.sm,
+  },
+  iconContainer: {
+    marginRight: spacing.base,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 24,
+    height: 24,
+  },
+  iconDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: colors.border.default,
+  },
+  iconDotActive: {
+    backgroundColor: colors.primary.main,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
   },
   instruction: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 15,
-    textAlign: 'center',
+    ...typography.styles.bodySmall,
+    color: colors.text.secondary,
+    flex: 1,
+    lineHeight: 20,
   },
   button: {
-    backgroundColor: '#007AFF',
-    padding: 15,
+    backgroundColor: colors.primary.main,
+    paddingVertical: spacing.base,
+    paddingHorizontal: spacing.xl,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 52,
+    shadowColor: colors.primary.main,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: colors.border.light,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    ...typography.styles.button,
+    color: colors.text.white,
   },
 });
 

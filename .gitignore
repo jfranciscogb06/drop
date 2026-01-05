@@ -54,3 +54,4 @@ Thumbs.db
 
 # Metro
 .metro-health-check*
+RENDER_ENV_VARS.txt
