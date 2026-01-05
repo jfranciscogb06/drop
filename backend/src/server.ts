@@ -20,6 +20,8 @@ const io = new Server(httpServer, {
 
 // Middleware
 app.use(cors());
+// Raw body for Stripe webhooks (must be before other routes)
+app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 
 // Initialize Socket.io handlers
