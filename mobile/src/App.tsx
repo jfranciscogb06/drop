@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { initializeStripe } from './services/stripe.service';
 import { config } from './config/env';
+import MapMainScreen from './screens/MapMainScreen';
 import TransactionScreen from './screens/TransactionScreen';
 import MapScreen from './screens/MapScreen';
 import LocationShareScreen from './screens/LocationShareScreen';
@@ -26,7 +27,7 @@ const App: React.FC = () => {
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="TransactionScreen"
+            initialRouteName="MapMainScreen"
             screenOptions={{
               headerStyle: {
                 backgroundColor: colors.primary.main,
@@ -39,6 +40,14 @@ const App: React.FC = () => {
               headerShadowVisible: false,
             }}
           >
+            <Stack.Screen
+              name="MapMainScreen"
+              component={MapMainScreen}
+              options={{ 
+                title: 'Drop',
+                headerShown: false,
+              }}
+            />
             <Stack.Screen
               name="TransactionScreen"
               component={TransactionScreen}
