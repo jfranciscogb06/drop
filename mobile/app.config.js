@@ -50,8 +50,8 @@ export default {
       ],
     ],
     extra: {
-      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:3000/api',
-      socketUrl: process.env.SOCKET_URL || 'http://localhost:3000',
+      apiBaseUrl: process.env.API_BASE_URL || 'https://drop-rpxl.onrender.com/api',
+      socketUrl: process.env.SOCKET_URL || 'https://drop-rpxl.onrender.com',
       stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',
     },
   },
